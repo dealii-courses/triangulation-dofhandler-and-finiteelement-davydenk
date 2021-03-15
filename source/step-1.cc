@@ -30,11 +30,9 @@
 using namespace dealii;
 
 
-void
-first_grid()
+//! Generate a hypercube, and output it as an svg file.
+void first_grid(Triangulation<2> &triangulation)
 {
-  Triangulation<2> triangulation;
-
   GridGenerator::hyper_cube(triangulation);
   triangulation.refine_global(4);
 
@@ -45,16 +43,16 @@ first_grid()
 }
 
 
-
-void
-second_grid()
+//! Generate a locally refined hyper_shell, and output it as an svg file.
+void second_grid(Triangulation<2> &triangulation)
 {
-  Triangulation<2> triangulation;
-
   const Point<2> center(1, 0);
   const double   inner_radius = 0.5, outer_radius = 1.0;
   GridGenerator::hyper_shell(
     triangulation, center, inner_radius, outer_radius, 10);
+
+  // triangulation.reset_manifold(0);
+
   for (unsigned int step = 0; step < 5; ++step)
     {
       for (auto &cell : triangulation.active_cell_iterators())
@@ -84,11 +82,34 @@ second_grid()
   std::cout << "Grid written to grid-2.svg" << std::endl;
 }
 
+//! Create an L-shaped domain with one global refinement, and write it on
+// `third_grid.vtk`.  Refine the L-shaped mesh adaptively around the re-entrant
+// corner three times (after the global refinement you already did), but with a
+// twist: refine all cells with the distance between the center of the cell and
+// re-entrant corner is smaller than 1/3.
+void third_grid(Triangulation<2> &tria)
+{
+  // Insert code here
+}
 
+//! Returns a tuple with number of levels, number of cells, number of active
+// cells. Test this with all of  your meshes.
+std::tuple<unsigned int, unsigned int, unsigned int>
+get_info(const Triangulation<2> &)
+{
+  // Insert code here
+  return std::make_tuple(0, 0, 0);
+}
 
 int
 main()
 {
-  first_grid();
-  second_grid();
+  {
+    Triangulation<2> triangulation;
+    first_grid(triangulation);
+  }
+  {
+    Triangulation<2> triangulation;
+    second_grid(triangulation);
+  }
 }
