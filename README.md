@@ -90,7 +90,12 @@
          unknowns, bandwidth of the sparsity pattern, average number of
          entries per row, and fill ratio.
 
+## Steps if you have ubuntu/debian and DO NOT want to use Docker
 
+In this case you can copy the commands from the docker image that you can find here:
+<https://github.com/dealii/docker-files/blob/master/dependencies-focal/Dockerfile>
 
+to install all the dependencies. After this, you can install the latest version 
+of the library using the commands you find here:
 
-
+<https://github.com/dealii/dealii/blob/master/contrib/docker/Dockerfile>
