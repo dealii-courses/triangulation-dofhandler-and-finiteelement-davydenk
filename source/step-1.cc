@@ -92,26 +92,81 @@ void second_grid(Triangulation<2> &triangulation)
 void third_grid(Triangulation<2> &tria)
 {
   // Insert code here
+  // last year code in comments
+  /* Triangulation<2> tr1,tr2,tr3,tr_final;
+   const Point<2> p1(0, 0);
+   const Point<2> p2(1,2);
+   const Point<2> p3(2,1);
+   const Point<2> p4(1,0);
+   const Point<2> p5(1,1);
+   const Point<2> p6(0,1);
+   GridGenerator::hyper_rectangle(tr1,p1,p5);
+   GridGenerator::hyper_rectangle(tr2,p6,p2);
+   GridGenerator::hyper_rectangle(tr3,p4,p3);
+   //they cannot be refined!
+   GridGenerator::merge_triangulations ({&tr1,&tr2,&tr3},tr_final);*/
+  GridGenerator::hyper_L(tria);
+  tria.refine_global(1);
+  const Point<2> p5(0, 0);
+  for (unsigned int step = 0; step < 3; ++step)
+    {
+      // Active cells are those that are not further refined
+      // we need to mark cells for refinement
+      for (auto &cell : tria.active_cell_iterators())
+        {
+          const double distance_from_corner = cell->center().distance({0, 0});
+          // choose whatever refinement condition
+          if (distance_from_corner < 2.0 / 3.0)
+            {
+              cell->set_refine_flag();
+            }
+        }
+      // refine global calls this function too
+      tria.execute_coarsening_and_refinement();
+    } // for steps loop
+
+  // tr_final.refine_global(2); //we want a nice picture :)
+
+  std::ofstream file_var("grid-3.vtk");
+  GridOut       grid_out;
+  grid_out.write_vtk(tria, file_var);
+  std::cout << "Grid written to grid-3.vtk" << std::endl;
 }
 
 //! Returns a tuple with number of levels, number of cells, number of active
 // cells. Test this with all of  your meshes.
 std::tuple<unsigned int, unsigned int, unsigned int>
-get_info(const Triangulation<2> &)
+get_info(const Triangulation<2> &tria)
 {
   // Insert code here
-  return std::make_tuple(0, 0, 0);
+  return std::make_tuple(tria.n_levels(),
+                         tria.n_cells(),
+                         tria.n_active_cells());
 }
+
+void
+torus_grid()
+{
+  Triangulation<2, 3> tria;
+  GridGenerator::torus(tria, 2, 1);
+  tria.refine_global(2);
+
+  std::ofstream out("grid-torus.vtk");
+  GridOut       grid_out;
+  grid_out.write_vtk(tria, out);
+  std::cout << "Grid written to grid-torus.vtk" << std::endl;
+}
+
 
 int
 main()
 {
-  {
-    Triangulation<2> triangulation;
-    first_grid(triangulation);
-  }
-  {
-    Triangulation<2> triangulation;
-    second_grid(triangulation);
-  }
+  Triangulation<2> triangulation;
+  first_grid(triangulation);
+  triangulation.clear();
+  second_grid(triangulation);
+  triangulation.clear();
+  third_grid(triangulation);
+
+  torus_grid();
 }

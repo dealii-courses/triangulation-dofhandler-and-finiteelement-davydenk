@@ -13,6 +13,7 @@ using namespace dealii;
 void first_grid(Triangulation<2> &);
 void second_grid(Triangulation<2> &);
 void third_grid(Triangulation<2> &);
+void torus_grid();
 std::tuple<unsigned int, unsigned int, unsigned int>
 get_info(const Triangulation<2> &);
 
@@ -41,6 +42,12 @@ TEST(Step1, Mark3)
   Triangulation<2> tria;
   third_grid(tria);
   ASSERT_TRUE(std::ifstream("grid-3.vtk"));
+}
+
+TEST(Step1, Mark_torus)
+{
+  torus_grid();
+  ASSERT_TRUE(std::ifstream("grid-torus.vtk"));
 }
 
 
